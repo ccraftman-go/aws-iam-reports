@@ -1,7 +1,6 @@
 package main
 
 import (
-	"aws-users/internal/setup"
 	"context"
 	"flag"
 	"fmt"
@@ -10,6 +9,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/iam"
+	"github.com/cloud-craftman-go/aws-iam-reports/internal/setup"
 )
 
 func setupApp() (*setup.App, error) {
