@@ -2,14 +2,11 @@ package csvutils
 
 import (
 	"bytes"
-	"context"
 	"encoding/csv"
 	"fmt"
 	"log"
 	"os"
 	"time"
-
-	"github.com/aws/aws-sdk-go-v2/service/iam"
 )
 
 type AWSUser struct {
@@ -20,29 +17,16 @@ type AWSUser struct {
 	AccessKey2LastUsed string `csv:"access_key_2_last_used_date"`
 }
 
-func AWSReport(iamClient *iam.Client, profile string) error {
+func ExportToFile(header []string, content []byte, profile string) error {
 	today := time.Now().Format("2006-01-02")
 	filename := fmt.Sprintf("aws-report-%s-%s.csv", profile, today)
-
-	_, err := iamClient.GenerateCredentialReport(context.TODO(), &iam.GenerateCredentialReportInput{})
-	if err != nil {
-		log.Fatalf("unable to generate the credentials report, %v", err)
-	}
-
-	// TODO: find a way to only GetCredentialReport when report is ready and delete thiss code
-	time.Sleep(2 * time.Second)
-
-	report, err := iamClient.GetCredentialReport(context.TODO(), &iam.GetCredentialReportInput{})
-	if err != nil {
-		log.Fatalf("unable to retrieve the credentials report, %v", err)
-	}
 
 	file, err := os.Create(filename)
 	if err != nil {
 		log.Fatalf("unable to create the file: %v", err)
 	}
 
-	r := csv.NewReader(bytes.NewReader(report.Content))
+	r := csv.NewReader(bytes.NewReader(content))
 
 	_, err = r.Read()
 	if err != nil {
@@ -53,7 +37,7 @@ func AWSReport(iamClient *iam.Client, profile string) error {
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
-	writer.Write([]string{"username", "creation_time", "password_last_used", "access_key_1_last_used", "access_key_2_last_used"})
+	writer.Write(header)
 
 	for {
 		row, err := r.Read()
@@ -66,7 +50,7 @@ func AWSReport(iamClient *iam.Client, profile string) error {
 			CreationTime:       row[2],
 			PassLastUsed:       row[4],
 			AccessKey1LastUsed: row[10],
-			AccessKey2LastUsed: row[14],
+			AccessKey2LastUsed: row[15],
 		}
 
 		writer.Write([]string{

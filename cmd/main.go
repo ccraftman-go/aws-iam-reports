@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/cloud-craftman-go/aws-iam-reports/internal/csvutils"
-	"github.com/cloud-craftman-go/aws-iam-reports/internal/setup"
+	"github.com/ccraftman-go/aws-iam-reports/internal/reports"
+	"github.com/ccraftman-go/aws-iam-reports/internal/setup"
 )
 
 func main() {
@@ -13,7 +13,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = csvutils.AWSReport(app.IamClient, *app.Profile)
+	err = reports.AWSReport(app.IamClient, *app.Profile)
 	if err != nil {
 		log.Fatal(err)
 	}

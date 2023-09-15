@@ -1,4 +1,4 @@
-module github.com/cloud-craftman-go/aws-iam-reports
+module github.com/ccraftman-go/aws-iam-reports
 
 go 1.20
 
